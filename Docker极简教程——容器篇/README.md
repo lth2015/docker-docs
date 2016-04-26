@@ -139,81 +139,26 @@ docker inspect ef7773e32d67
         "hello world"
     ],
     "State": {
-        "Status": "exited",
-        "Running": false,
-        "Paused": false,
-        "Restarting": false,
-        "OOMKilled": false,
-        "Dead": false,
-        "Pid": 0,
-        "ExitCode": 0,
-        "Error": "",
+    	......
         "StartedAt": "2016-04-26T11:07:14.209156256Z",
         "FinishedAt": "2016-04-26T11:07:14.273612789Z"
     },
     "Image": "bc744c4ab376115cc45c610d53f529dd2d4249ae6b35e5d6e7a96e58863545aa",
-    "ResolvConfPath": "/var/lib/docker/containers/ef7773e32d670b3ce47d5a7320ba0935e5d56b5a401a246eb46cd40194b1e945/resolv.conf",
     "HostnamePath": "/var/lib/docker/containers/ef7773e32d670b3ce47d5a7320ba0935e5d56b5a401a246eb46cd40194b1e945/hostname",
     "HostsPath": "/var/lib/docker/containers/ef7773e32d670b3ce47d5a7320ba0935e5d56b5a401a246eb46cd40194b1e945/hosts",
     "LogPath": "/var/lib/docker/containers/ef7773e32d670b3ce47d5a7320ba0935e5d56b5a401a246eb46cd40194b1e945/ef7773e32d670b3ce47d5a7320ba0935e5d56b5a401a246eb46cd40194b1e945-json.log",
-    "Name": "/distracted_allen",
-    "RestartCount": 0,
     "Driver": "aufs",
-    "ExecDriver": "native-0.2",
-    "MountLabel": "",
-    "ProcessLabel": "",
-    "AppArmorProfile": "",
-    "ExecIDs": null,
     "HostConfig": {
-        "Binds": null,
-        "ContainerIDFile": "",
-        "LxcConf": [],
-        "Memory": 0,
-        "MemoryReservation": 0,
-        "MemorySwap": 0,
-        "KernelMemory": 0,
-        "CpuShares": 0,
-        "CpuPeriod": 0,
-        "CpusetCpus": "",
-        "CpusetMems": "",
-        "CpuQuota": 0,
-        "BlkioWeight": 0,
-        "OomKillDisable": false,
-        "MemorySwappiness": -1,
-        "Privileged": false,
-        "PortBindings": {},
-        "Links": null,
-        "PublishAllPorts": false,
-        "Dns": [],
-        "DnsOptions": [],
-        "DnsSearch": [],
-        "ExtraHosts": null,
-        "VolumesFrom": null,
-        "Devices": [],
-        "NetworkMode": "default",
-        "IpcMode": "",
-        "PidMode": "",
-        "UTSMode": "",
-        "CapAdd": null,
-        "CapDrop": null,
-        "GroupAdd": null,
+	......
         "RestartPolicy": {
             "Name": "no",
             "MaximumRetryCount": 0
         },
-        "SecurityOpt": null,
         "ReadonlyRootfs": false,
-        "Ulimits": null,
         "LogConfig": {
             "Type": "json-file",
             "Config": {}
-        },
-        "CgroupParent": "",
-        "ConsoleSize": [
-            0,
-            0
-        ],
-        "VolumeDriver": ""
+        }
     },
     "GraphDriver": {
         "Name": "aufs",
@@ -222,55 +167,23 @@ docker inspect ef7773e32d67
     "Mounts": [],
     "Config": {
         "Hostname": "ef7773e32d67",
-        "Domainname": "",
-        "User": "",
-        "AttachStdin": true,
-        "AttachStdout": true,
-        "AttachStderr": true,
-        "Tty": true,
-        "OpenStdin": true,
-        "StdinOnce": true,
-        "Env": null,
         "Cmd": [
             "echo",
             "hello world"
         ],
         "Image": "busybox",
-        "Volumes": null,
-        "WorkingDir": "",
-        "Entrypoint": null,
-        "OnBuild": null,
-        "Labels": {},
         "StopSignal": "SIGTERM"
+	......
     },
     "NetworkSettings": {
         "Bridge": "",
         "SandboxID": "",
-        "HairpinMode": false,
-        "LinkLocalIPv6Address": "",
-        "LinkLocalIPv6PrefixLen": 0,
-        "Ports": null,
-        "SandboxKey": "",
-        "SecondaryIPAddresses": null,
-        "SecondaryIPv6Addresses": null,
-        "EndpointID": "",
-        "Gateway": "",
-        "GlobalIPv6Address": "",
-        "GlobalIPv6PrefixLen": 0,
-        "IPAddress": "",
-        "IPPrefixLen": 0,
-        "IPv6Gateway": "",
-        "MacAddress": "",
+	......
         "Networks": {
             "bridge": {
                 "EndpointID": "",
                 "Gateway": "",
-                "IPAddress": "",
-                "IPPrefixLen": 0,
-                "IPv6Gateway": "",
-                "GlobalIPv6Address": "",
-                "GlobalIPv6PrefixLen": 0,
-                "MacAddress": ""
+		......
             }
         }
     }
