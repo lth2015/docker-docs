@@ -128,5 +128,5 @@ ls -lrt my-busybox.tar
 ```
 
 ### 小练习
-##### 以ubuntu14.04为基础镜像，构建一个包含vim, wget, curl, make命令的镜像，以yeepay/{自己名字}:{当前日期：2016-04-27}格式的镜像，并推送至私有仓库
-
+##### 以ubuntu14.04为基础镜像，构建一个包含vim, wget, curl, make命令的镜像，以yeepay/{自己名字}:{当前日期}格式的镜像，并推送至私有仓库
+##### 例如：镜像名 yeepay/lidawei:2014-04-28  镜像仓库 registry.docker:5000
