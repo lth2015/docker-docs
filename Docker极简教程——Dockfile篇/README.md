@@ -47,13 +47,22 @@ RUN sudo gem install kafkat --source https://rubygems.org --no-ri --no-rdoc
 COPY .kafkatcfg /home/kafka/
 RUN kafkat partitions
 
+ENV BROKERID=1
+RUN sed -i "s/broker.id=0/broker\.id=\${env:SERVER_ID}/g" /home/kafka/kafka/config/server.properties
+
+## CMD ["/home/kafka/sed.sh"]
+ENTRYPOINT ["/home/kafka/sed.sh"]
 
 EXPOSE 9092
-
-# RUN sed -i "s/broker.id=0/broker\.id=\${env:SERVER_ID}/g" /home/kafka/kafka/config/server.properties
-#ENV BROKERID=1
-#COPY sed.sh /home/kafka/
-#ENTRYPOINT ["/home/kafka/sed.sh"]
-#RUN nohup /home/kafka/kafka/bin/kafka-server-start.sh /home/kafka/kafka/config/server.properties > /tmp/kafka.log 2>&1 &
 ```
 
+##### FROM: 表示此镜像在那个镜像基础上构建
+##### RUN: 要在构建过程中执行的命令
+##### ADD: 将本地文件添加到正在构建的镜像中去，如果是压缩包，ADD命令可以自动解压
+##### COPY: 将本地文件拷贝到正在构建的镜像中去
+##### USER: 切换用户，默认是root
+##### WORKDIR: 切换工作目录
+##### ENV: 声明环境变量
+##### CMD: 提供了容器的默认执行命令。Dockerfile只允许使用一次CMD命令。多个CMD命令会抵消之前所有的指令，只有最后一个命令会生效
+##### EXPOSE: 制定容器在运行时监听的端口
+##### ENTRYPOINT: 配置给容器一个可执行的命令，在容器启动时默认执行的命令，对于类似Java Webapp这样的景象，它包含的命令不应该是守护的，应该是永不退出的，以保证容器持续的运行
