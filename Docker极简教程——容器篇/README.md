@@ -212,3 +212,8 @@ docker rm -f ef7773e32d67
 
 ef7773e32d67
 ```
+
+###### 将容器提交为镜像，即将此时的容器固化下来
+```bash
+docker commit -m "your message" ef7773e32d67 yeepay/dawei-ubuntu:14.04
+```
