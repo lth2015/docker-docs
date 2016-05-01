@@ -3,14 +3,14 @@ Kubernetes入门——基本概念
 
 #### Kubernetes是什么？
 
-Kubernetes是谷歌开源的容器编排引擎，架构和设计思想来源于谷歌内部使用调度工具——Borg。Borg是谷歌一个久负盛名的的内部使用的大规模集群管理系统，它基于Linux Container(LXC)技术，目的是实现资源管理的自动化，以及跨多个数据中心的资源利用率最大化。Borg，或者说LXC技术，在谷歌已经有了十多年的稳定运行经验。2015年4月，伴随着Borg的[论文]()公开发表，Kubernetes也横空出世，迅速占领了容器编排的领袖地位。
+Kubernetes是谷歌开源的容器编排引擎，架构和设计思想来源于谷歌内部使用调度工具——Borg。Borg是谷歌一个久负盛名的的内部使用的大规模集群管理系统，它基于Linux Container(LXC)技术，目的是实现资源管理的自动化，以及跨多个数据中心的资源利用率最大化。Borg，或者说LXC技术，在谷歌已经有了十多年的稳定运行经验。2015年4月，伴随着[Borg的论文](Large-scale cluster management at Google with Borg.pdf)公开发表，Kubernetes也横空出世，迅速占领了容器编排的领袖地位。
 
 Kubernetes是一套完备的容器集群管理引擎，它提供了各种机制和接口来保证应用的快速发布和健康运行，提供了丰富的命令行工具（CLI）和API接口，便于与集群交互，同时Kubernetes提供了多层次的安全防护和隔离机制，多租户应用的支撑能力，应用的全生命周期管理，可扩展的自动资源调度机制，多粒度的资源配额管理能力，多租户支持的统一配置管理组件，多可用区域支撑……，Kubernetes提供了一整套完善的容器管理工具，为容器集群管理提供了一站式服务。
 
 #### Kubernetes基本知识
 
 在Kubernetes中，有几个基本概念：
-+ *Service*: Kubernetes内部的服务资源，它可以将多个应用实例结合在一起，对外暴露一个服务（即Service），同时，它可以定义访问模式（HTTP/TCP/UDP）和端口号，并以一个虚拟机IP的形式发布出来，它拥有一个制定的名字，在容器内部，可以通过这个名字来访问这个Service代表的应用实例，在访问期间，Service自动按照Round-Robin的策略来做负载均衡。
++ *Service*: Kubernetes内部的服务资源，它可以将多个应用实例结合在一起，对外暴露一个服务（即Service），同时，它可以定义访问模式（HTTP/TCP/UDP）和端口号，并以一个虚拟IP的形式发布出来，它拥有一个制定的名字，在容器内部，可以通过这个名字来访问这个Service代表的应用实例，在访问期间，Service自动按照Round-Robin的策略来做负载均衡。
 + *Pod*: Kubernetes中应用的概念，它是有一个或者一组容器组成，用于运行各种应用，Pod是Kubernetes应用调度的最小单元，比如，通过Kubernetes要运行一个Nginx容器，那么，就需要将Nginx容器发在一个Pod中，在Kubernetes中部署运行。Service所抽象的应用实例，就是指的是这些Pod。
 + *Replication* *Controller*(下文简称RC): Kubernete的副本控制器，它用于控制存活的Pod（应用）实例个数，即副本数。它会每隔一段时间（5s）通过Kubernetes的管理节点来查询它控制下的副本个数，如果没有达到预先制定的个数，那么就创建新的Pod已达到设定的副本数。Pod（应用）的扩容，只需通过修改Replica的个数就能轻松完成。
 + *Node*: 实际运行容器的计算节点（物理机或者虚拟机）。
