@@ -26,3 +26,10 @@ Kubernetes 1.2.0 发布，Docker集群管理驶入快车道
 
 6. 新的控制台（dashboard）：kubectl的web界面版本，能够使用dashboard创建rc和扩容。在1.2版本中，APISERVER:8080/ui指向了新的面板（dashboard）而不是1.1以前的kube-ui。Dashboard的界面如下所示：
 
+![](http://mmbiz.qpic.cn/mmbiz/QP0AY7tdJnWGZvtgaXmwo4wtic5r7LeFuWWu5gsCQupa5ymmTxGUhVc6DVibic6ibLFg9oBsjs6zGpHc4rcdxMTf2g/640?wx_fmt=png&wxfrom=5&wx_lazy=1)
+![](http://mmbiz.qpic.cn/mmbiz/QP0AY7tdJnWGZvtgaXmwo4wtic5r7LeFu3j4MssTvFcu9jyQQlyqZAj0JyNIVtp8KOFl43qlKqOYEmuB3hI9abQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1)
+![](http://mmbiz.qpic.cn/mmbiz/QP0AY7tdJnWGZvtgaXmwo4wtic5r7LeFuSN2d73kCxnehn0siaFyetfkHVkGdBaqKHOn1TSWGwqictMYM2PI5VbJA/640?wx_fmt=png&wxfrom=5&wx_lazy=1)
+![](http://mmbiz.qpic.cn/mmbiz/QP0AY7tdJnWGZvtgaXmwo4wtic5r7LeFu9thnjBiaXr4O4OerTmrVeRYIPtgnW18kk3eia7QMnwIQzOcGR20ShoYg/640?wx_fmt=png&wxfrom=5&wx_lazy=1)
+
+更多的细节请移步：
+[Five Days of Kubernetes 1.2](http://blog.kubernetes.io/2016/03/five-days-of-kubernetes-12.html)
