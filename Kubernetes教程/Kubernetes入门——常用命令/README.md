@@ -157,3 +157,157 @@ INFO: Starting service Catalina
 kubectl exec -ti push-ios-tp4xs /bin/bash
 
 ```
+
+##### 从文件(yaml/json)中创建pods
+```bash
+cat busybox.yaml
+```
+```yaml
+apiVersion: v1
+kind: Pod 
+metadata:
+  name: busybox
+  namespace: default
+spec:
+  containers:
+  - image: registry.docker:5000/busybox
+    command:
+      - sleep
+      - "36000"
+    imagePullPolicy: IfNotPresent
+    name: busybox
+  restartPolicy: Always
+```
+
+```bash
+kubectl create -f busybox.yaml
+```
+
+##### 从文件(yaml/json)中创建rc
+```bash
+cat ios-rc.yaml
+```
+```yaml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: push-ios
+  labels:
+    name: push-ios
+spec:
+  replicas: 2
+  selector:
+    name: push-ios
+  template:
+    metadata:
+      labels:
+        name: push-ios
+    spec:
+      containers:
+      - name: push-ios
+        image: registry.test.com:5000/push-ios:v1
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: "2"
+            memory: "4096Mi"
+        livenessProbe:
+          httpGet:
+            path: /ios-pns/healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 120
+        volumeMounts:
+        - mountPath: /apps/log
+          name: storage
+        - mountPath: /var/yeepay/pushcert
+          name: cert
+      volumes:
+      - name: storage
+        source:
+          emptyDir: {}
+      - name: cert
+        rbd: 
+          monitors:
+            - "172.21.1.11:6789"
+          pool: rbd
+          image: pushios
+          secretRef:
+            name: ceph-secret
+          fsType: ext4
+          readOnly: false
+```
+```bash
+kubectl create -f 
+```
+
+##### 从文件(yaml/json)中创建svc
+```bash
+cat es-discovery.json
+```
+```json
+{
+  "apiVersion": "v1",
+  "kind": "Service",
+  "metadata": {
+    "name": "elasticsearch-discovery",
+    "labels": {
+      "component": "elasticsearch",
+      "role": "master"
+    }
+  },
+  "spec": {
+    "selector": {
+      "component": "elasticsearch",
+      "role": "master"
+    },
+    "ports": [
+      {
+        "name": "transport",
+        "port": 9300,
+        "protocol": "TCP",
+        "nodePort": 32761
+      }
+    ],
+    "type": "NodePort"
+  }
+}
+```
+```bash
+kubectl create -f es-discovery.json
+```
+
+##### 从文件(yaml/json)中创建endpoint
+```bash
+cat db2-endpoint.yaml
+```
+
+```json
+{
+    "kind": "Endpoints",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "push-db2"
+    },
+    "subsets": [
+        {
+            "addresses": [
+                { "IP": "172.17.106.194" }
+            ],
+            "ports": [
+                { "port": 50000 }
+            ]
+        }
+    ]
+}
+```
+
+```bash
+kubectl create -f endpoint.yaml
+```
+
+##### 删除文件
+```bash
+kubectl delete -f xxx.yaml/xxx.json
+```
