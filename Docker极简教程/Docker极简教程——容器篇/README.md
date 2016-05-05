@@ -217,3 +217,92 @@ ef7773e32d67
 ```bash
 docker commit -m "your message" ef7773e32d67 yeepay/dawei-ubuntu:14.04
 ```
+
+
+##数据卷 
+###在容器中创建一个数据卷
+```
+docker run -it --name web1 -v  /webapp ubuntu:14.04 /bin/bash
+```
+###挂载一个主机目录作为数据卷
+####默认权限是读写
+```
+docker run -ti --name web2 -v /home/test:/home/test ubuntu:14.04 /bin/bash
+
+docker inspect [容器id]
+ "Mounts": [
+        {
+            "Source": "/home/test",
+            "Destination": "/home/test",
+            "Mode": "",
+            "RW": true
+        }
+    ],
+```  
+ 
+####修改权限为只读
+ 
+```
+docker run -ti --name web3 -v /home/test1:/home/test1:ro ubuntu:14.04 /bin/bash
+
+  "Mounts": [
+        {
+            "Source": "/home/test1",
+            "Destination": "/home/test1",
+            "Mode": "ro",
+            "RW": false
+        }
+    ],
+    
+root@16fa0d40889c:/home/test1# echo '111111' >>text.txt 
+bash: text.txt: Read-only file system
+```    
+###挂载一个本地主机文件作为数据卷
+```
+  docker run -it -v ~/.bash_history:/.bash_history  ubuntu:14.04 /bin/bash
+```
+###数据卷容器
+####首先,创建一个命令的数据卷容器db_share
+```
+docker run -tid -v /share --name db_share ubuntu:14.04 /bin/bash
+```
+####然后,在其他容器中使用--volumes-from来挂载db_share容器中的数据卷
+```
+docker run -tid --volumes-from db_share --name db1 ubuntu:14.04
+docker run -tid --volumes-from db_share --name db2 ubuntu:14.04
+```
+####还可以使用多个--volumes-from参数来从多个容器挂载多个数据卷。也可以从其他已经挂载了数据卷的容器来挂载数据卷
+```
+docker run -tid --name db3 --volumes-from db1 ubuntu:14.04
+```
+
+##网络
+###介绍
+```
+host模式
+container模式
+none模式
+bridge模式
+```
+###外部访问容器
+####映射所有接口地址
+```
+docker run -tid --name website1 -v $PWD/website:/var/www/html/website -p 6667:80 xul487290/nginx nginx
+```
+####映射到指定地址的指定端口
+```
+docker run -tid --name website2 -v $PWD/website:/var/www/html/website -p 172.17.103.47:6667:80 xul487290/nginx nginx
+```
+
+####映射到指定的任意端口
+```
+docker run -tid --name website3 -v $PWD/website:/var/www/html/website -p 172.17.103.47::80 xul487290/nginx nginx
+```
+ 
+####查看端口映射
+```
+docker port website1 80
+```
+
+
+
