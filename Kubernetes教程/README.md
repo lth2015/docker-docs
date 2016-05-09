@@ -54,7 +54,7 @@
 Swarm由于不能再生产上使用，加上功能简单，首先出局😢
 
 关于Mesos和Kubernetes选型，从网络上看到这张图
-![](http://read.html5.qq.com/image?src=forum&q=5&r=0&imgflag=7&imageUrl=http://mmbiz.qpic.cn/mmbiz/icQbWvrFMeJWIPlGOsYwCAY8faTtq7OgmLXf32RDyxzHiadkqBJXrdgYOn4yq05eDIcdp5BibsG7jsfYb5a5nHbyQ/0?wx_fmt=png)
+![](docker-cluster.png)
 
 这张对比图(当时)显示了，就资源调度而言，Mesos强于Kubernetes，但是Kubernetes提供的是从资源调度，或者说资源抽象，到服务发现，负载均衡，应用的全生命周期管理的全部功能，而Mesos仅从资源调度，服务管理需要借助Marathon，网络能力聊胜于无。
 
@@ -75,10 +75,14 @@ Swarm由于不能再生产上使用，加上功能简单，首先出局😢
 ![Kubernetes架构图](kubernetes-arch.png)
 
 * 核心概念的正交分解、资源抽象和解耦：
-  ** Pod为Kubernetes的最小调度单元，可以包含一个或者多个容器，用于对容器进行封装，便于容器和宿主机解耦。
-  ** RC负责Pod的副本数，时刻保持可用的副本数，就保证了应用的高可用，对于扩容和缩容，对于RC仅仅就是个数字游戏。
-  ** Service抽象了服务的概念，通过Pod上的标签来选择同一种服务对外提供，简化应用管理的同时，也增加了应用挂历的灵活性，自带的负载均衡服务和服务发现工具，让程序开发和运维部署的工作量降低了个数量级。
-  ** Node是对计算资源的抽象，宿主机作为提供计算资源的单元对外提供服务，使得宿主机跟服务，跟应用完全的解耦。
+
+** Pod为Kubernetes的最小调度单元，可以包含一个或者多个容器，用于对容器进行封装，便于容器和宿主机解耦。
+
+** RC负责Pod的副本数，时刻保持可用的副本数，就保证了应用的高可用，对于扩容和缩容，对于RC仅仅就是个数字游戏。
+
+** Service抽象了服务的概念，通过Pod上的标签来选择同一种服务对外提供，简化应用管理的同时，也增加了应用挂历的灵活性，自带的负载均衡服务和服务发现工具，让程序开发和运维部署的工作量降低了个数量级。
+
+** Node是对计算资源的抽象，宿主机作为提供计算资源的单元对外提供服务，使得宿主机跟服务，跟应用完全的解耦。
 
 ![Kubernetes核心概念实例](Kube-Arch.png)
 
