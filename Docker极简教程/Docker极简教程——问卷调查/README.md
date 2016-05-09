@@ -39,7 +39,7 @@ Docker极简教程——问卷调查
 ##### 将nginx:1.9.1镜像运行起来，从本地加载nginx.conf, 并将access.log写到宿主机上，暴露宿主机端口8888，命名为mynginx，并使其能够自动重启
 
 
-#### 删除mynginx的容器
+###### 删除mynginx的容器
 
 
 ##### 删除nginx:1.9.1镜像
