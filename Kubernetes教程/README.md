@@ -72,7 +72,7 @@ Swarm由于不能再生产上使用，加上功能简单，首先出局😢
 
 * 核心组件的解耦：kubelet负责管理容器的生命周期，kube-proxy负责网络通信和负载均衡，kube-scheduler负责容器的调度，kube-controller-manager负责节点、容器的管理，kube-apiserver负责整个集群资源的创建、存储、销毁。etcd集群负责存储API创建的各种资源。
 
-![Kubernetes架构图](https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwjg_Yjdx8zMAhWG2D4KHY77BxkQjRwIBw&url=http%3A%2F%2Fblog.cspp.in%2Findex.php%2F2015%2F12%2F16%2Fkubernetes%2F&psig=AFQjCNGuskis1d-LYRDPXGFzIepcprY74Q&ust=1462868422144186)
+![Kubernetes架构图](kubernetes-arch.png)
 
 * 核心概念的正交分解、资源抽象和解耦：
   ** Pod为Kubernetes的最小调度单元，可以包含一个或者多个容器，用于对容器进行封装，便于容器和宿主机解耦。
@@ -80,7 +80,7 @@ Swarm由于不能再生产上使用，加上功能简单，首先出局😢
   ** Service抽象了服务的概念，通过Pod上的标签来选择同一种服务对外提供，简化应用管理的同时，也增加了应用挂历的灵活性，自带的负载均衡服务和服务发现工具，让程序开发和运维部署的工作量降低了个数量级。
   ** Node是对计算资源的抽象，宿主机作为提供计算资源的单元对外提供服务，使得宿主机跟服务，跟应用完全的解耦。
 
-![Kubernetes核心概念实例](https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwiWiJivyczMAhUEVj4KHVujABgQjRwIBw&url=http%3A%2F%2Fwww.emergingafrican.com%2F2015%2F02%2Fconfiguring-kubernetes-to-use.html&psig=AFQjCNGuskis1d-LYRDPXGFzIepcprY74Q&ust=1462868422144186)
+![Kubernetes核心概念实例](Kube-Arch.png)
 
 Kubernetes提供良好的特性，快速的产品迭代和活跃的社区，为Kubernetes提供源源不断的活力和竞争力，所以我们决定，投注Kubernetes。
 
