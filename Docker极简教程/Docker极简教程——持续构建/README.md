@@ -259,6 +259,12 @@ docker build -t $IMAGENAME .
 # push docker image
 docker tag $IMAGENAME registry.test.com:5000/$IMAGENAME 
 docker push registry.test.com:5000/$IMAGENAME
+
+#delete old version image
+for imgid in `docker images |grep ${JOB_NAME##*/} |sed -n 2p |awk '{print $3}'`;do
+	docker rmi -f $imgid
+done
+
 ```
 
 * 构建某项目镜像使用的Dockerfile
