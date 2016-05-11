@@ -179,5 +179,138 @@ docker run --privileged  --name jenkins-in-docker -d \
         registry.test.com:5000/liyong/jenkins-in-docker
 ```
 
-#### 搭建存放Dockfile、
-从“基础设施即代码”(Infrastructure as Code)的理念里我们
+#### 搭建存放Dockerfile、运行脚本的Gitlab
+
+从“基础设施即代码”(Infrastructure as Code)的理念得到的启示，我们将Dockerfile，一些必要运行脚本（为了避免重复，把命令脚本化）像代码一样管理，所以我们搭建一个专门用于存放Dockerfile和运行脚本的git仓库。
+
+
+* 使用docker启动reids
+
+```bash
+docker run --name=docker_gitlab_redis -tid \
+	-p 26379:6379  registry.test.com:5000/liyong/redis
+```
+
+* 使用docker启动mysql
+
+```bash
+docker run --name=docker_gitlab_mysql \
+	-tid -e 'DB_NAME=gitlabhq_production' \
+		-e 'DB_USER=gitlab' -e 'DB_PASS=password' \
+		-v /opt/docker_gitlab/mysql:/var/lib/mysql \
+		-p 23306:3306 registry.test.com:5000/liyong/mysql
+```
+
+* 使用gitlab
+
+```bash
+docker run --name docker_gitlab -d \
+    --link docker_gitlab_mysql:mysql \
+        --link docker_gitlab_redis:redisio \
+        --publish 20022:22 --publish 20080:80 --publish 20443:443 \
+	--env 'GITLAB_PORT=20080' \
+	--env 'GITLAB_SSH_PORT=20022' \
+	--env 'GITLAB_SECRETS_DB_KEY_BASE=long-and-random-alpha-numeric-string' \
+        --volume /srv/docker/docker_gitlab/gitlab:/home/git/data \
+	registry.test.com:5000/liyong/gitlab
+```
+
+* 创建一个gitlab账号，然后进入数据库直接将该用户置为已验证状态
+
+```bash
+docker exec -ti docker_gitlab_mysql /bin/bash
+
+mysql -ugitlab -ppassword -Dgitlabhq_production -e "update users set confirmed_at = created_at where username='liyong'"
+
+mysql -ugitlab -ppassword -Dgitlabhq_production -e "commit"
+```
+
+#### 使用Gitlab
+
+在gitlab上存放每个项目的build.sh和Dockerfile（每个项目一套自己的build.sh和Dockerfile）
+
+* 构建某项目镜像用的build.sh
+
+```bash
+#!/bin/bash
+# add /etc/hosts
+if [ `grep "172.17.103.210 registry.test.com" /etc/hosts |wc -l` -eq 0 ];then 
+	echo '172.17.103.210 registry.test.com' >> /etc/hosts
+fi
+
+# start docker in docker
+if [ `ps -ef |grep docker |grep -v grep |wc -l` -ne 2 ];then
+	/usr/local/bin/dockerd-entrypoint.sh
+fi
+
+sleep 10
+
+# create new tomcat
+cp -r /var/jenkins_home/tomcat_registry/tomcat7-57-tomcat-cicd-demo tomcat7-57-tomcat-cicd-demo
+cp -r /var/jenkins_home/workspace/cicd-demo/cicd-demo.war .
+rm -f tomcat7-57-tomcat-cicd-demo/webapps/cicd-demo.war 
+cp cicd-demo.war tomcat7-57-tomcat-cicd-demo/webapps
+
+# build docker image
+VERSION=`date +'%Y%m%d%H%M%S'`
+IMAGENAME="yeepay/${JOB_NAME##*/}:$VERSION"
+docker build -t $IMAGENAME .
+
+# push docker image
+docker tag $IMAGENAME registry.test.com:5000/$IMAGENAME 
+docker push registry.test.com:5000/$IMAGENAME
+```
+
+* 构建某项目镜像使用的Dockerfile
+
+```Dockerfile
+FROM registry.test.com:5000/jdk:1.7
+ADD tomcat7-57-tomcat-cicd-demo /apps/product/tomcat7
+RUN mkdir -p /apps/log
+RUN mkdir -p /apps/log/tomcat-access/
+RUN mkdir -p /apps/log/tomcat-nohup/
+ENTRYPOINT [ "/apps/product/tomcat7/bin/catalina.sh", "run" ] 
+
+```
+
+#### Jenkins、Gitlab页面中的设置
+
+
+##### Jenkins系统配置
+
+>Jenkins->系统管理->系统设置
+
+Gitlab配置部分，填写Gitlab host URL（例如：http://gitlab）、API Token（查看Gitlab个人账号里面的API Token值），勾选Ignore SSL Certificate Errors
+
+
+##### Jenkins项目配置
+
+Jenkins安装相应的插件：GIT client plugin、GIT plugin、Gitlab Hook Plugin、GitLab Plugin。
+
+源码管理部分，选择Git，填写项目仓库地址和认证用证书或者用户名密码（认证信息可以先在Jenkins->Credentials里面预先设置好）。 
+
+构建触发器部分，勾选Build when a change is pushed to GitLab. GitLab CI Service URL: http://XXX.XXX.XXX.XXX:8080/jenkins/project/XXXXXXXX，子项目取消勾选Build on Push Events，其他默认。
+
+在构建过程——execute shell上填入:
+
+```bash
+if [ -d /var/jenkins_home/docker_build ];then
+	mkdir -p /var/jenkins_home/docker_build
+fi
+
+cd /var/jenkins_home/docker_build
+rm -rf ${JOB_NAME##*/}
+
+git clone http://liyong:hacker12992008@172.21.1.11:20080/liyong/${JOB_NAME##*/}.git
+cd ${JOB_NAME##*/}
+
+chmod 755 ./build.sh
+./build.sh
+```
+
+##### Gitlab项目配置
+
+>Project->Settings->Web hooks
+
+URL填写：Jenkins项目中构建触发器部分提示的GitLab CI Service URL，勾选Push events和Merge Request events
+
