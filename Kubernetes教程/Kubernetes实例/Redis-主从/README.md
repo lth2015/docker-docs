@@ -75,7 +75,7 @@ spec:
         - containerPort: 6379
         resources:
           limits:
-            memory: "40960M"
+            memory: "4096M"
 ```
 [下载主节点RC文件](redis-master-rc.yaml)
 
@@ -120,6 +120,81 @@ spec:
         - containerPort: 6379
         resources:
           limits:
-            memory: "40960M"
+            memory: "4096M"
 ```
 [下载从节点RC文件](redis-slave-rc.yaml)
+
+```bash
+
+kubectl create -f redis-slave-rc.yaml
+```
+
+
+##### 创建Redis主节点访问服务
+
+```bash
+
+cat > redis-master-svc.yaml
+```
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-master
+  labels:
+    name: redis-master
+spec:
+  type: NodePort
+  ports:
+  - port: 6379
+    targetPort: 6379
+    nodePort: 32379
+  selector:
+    name: redis-master
+
+```
+[下载主节点Service文件](redis-master-svc.yaml)
+
+```bash
+
+kubectl create -f redis-master-svc.yaml
+```
+
+##### 创建Redis从节点访问服务
+
+```bash
+
+cat > redis-slave-svc.yaml
+```
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-slave
+  labels:
+    name: redis-slave
+spec:
+  type: NodePort
+  ports:
+  - port: 6379
+    targetPort: 6379
+    nodePort: 32340
+  selector:
+    name: redis-slave
+
+```
+[下载从节点Service文件](redis-slave-svc.yaml)
+
+```bash
+
+kubectl create -f redis-slave-svc.yaml
+```
+
+到此为止，Kubernetes集群内的redis已经创建完成了，现在可以通过计算节点的32379和32340来分别访问redis的主、从节点了。
+
+#### 使用场景
+-------------------------------------------------------------------
+
+我们建议本文的所述的Redis主从结构模式只使用在“缓存”的场景下，另外，“存储”型的使用场景我们会在后续的文章中介绍。

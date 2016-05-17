@@ -5,7 +5,10 @@ metadata:
   labels:
     name: redis-slave
 spec:
+  type: NodePort
   ports:
   - port: 6379
+    targetPort: 6379
+    nodePort: 32340
   selector:
     name: redis-slave
