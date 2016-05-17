@@ -180,7 +180,7 @@ spec:
   ports:
   - port: 6379
     targetPort: 6379
-    nodePort: 32340
+    nodePort: 32380
   selector:
     name: redis-slave
 

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: worker
-        image: registry.docker:5000/gcr/redis-slave:v1
+        image: registry.test.com:5000/gcr/redis-slave:v1
         env:
         - name: GET_HOSTS_FROM
           value: dns
