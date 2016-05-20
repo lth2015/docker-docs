@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: offlinepos-quota
+  namespace: offlinepos
+spec:
+  hard:
+    cpu: 10
+    memory: 40Gi

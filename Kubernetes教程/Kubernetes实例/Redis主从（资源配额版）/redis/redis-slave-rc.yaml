@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: redis-slave
+  namespace: offlinepos
+  labels:
+    name: redis-slave
+spec:
+  replicas: 2
+  selector:
+    name: redis-slave
+  template:
+    metadata:
+      labels:
+        name: redis-slave
+    spec:
+      containers:
+      - name: worker
+        image: registry.docker:5000/gcr/redis-slave:v1
+        env:
+        - name: MASTERAUTH
+          value: yeepayredis
+        - name: GET_HOSTS_FROM
+          value: dns
+        ports:
+        - containerPort: 6379
+        resources:
+          limits:
+            memory: "8092M"
