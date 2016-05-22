@@ -238,8 +238,9 @@ spec:
           fsType: ext4
           readOnly: false
 ```
+
 ```bash
-kubectl create -f 
+kubectl create -f ios-rc.yaml
 ```
 
 ##### 从文件(yaml/json)中创建svc
