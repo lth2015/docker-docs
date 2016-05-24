@@ -1,4 +1,4 @@
-FROM ubuntu-base:v1
+FROM ubuntu-jdk7:v1
 MAINTAINER dawei.li@yeepay.com
 
 ADD tomcat7-40-tomcat-push-portal/ /apps/product/tomcat7
