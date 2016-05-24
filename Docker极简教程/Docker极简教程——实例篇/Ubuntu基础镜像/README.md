@@ -89,7 +89,10 @@ docker pull  registry.test.com:5000/ubuntu-jdk7:v1
 docker run -ti --rm ubuntu-jdk7:v1 /bin/bash
 ```
 
-##### 退出容器：exit
+##### 退出容器：
+```bash
+exit
+```
 
 ##### 删除容器
 ```bash
