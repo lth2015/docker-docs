@@ -23,7 +23,7 @@ Kubernetes是一套完备的容器集群管理引擎，它提供了各种机制�
 
 + *Pod*: Kubernetes中应用的概念，它是有一个或者一组容器组成，用于运行各种应用，Pod是Kubernetes应用调度的最小单元，比如，通过Kubernetes要运行一个Nginx容器，那么，就需要将Nginx容器发在一个Pod中，在Kubernetes中部署运行。Service所抽象的应用实例，就是指的是这些Pod。
 
-!Kubernetes ReplicationController[](images/rc.png)
+![Kubernetes ReplicationController](images/rc.png)
 
 + *Replication* *Controller*(下文简称RC): Kubernete的副本控制器，它用于控制存活的Pod（应用）实例个数，即副本数。它会每隔一段时间（5s）通过Kubernetes的管理节点来查询它控制下的副本个数，如果没有达到预先制定的个数，那么就创建新的Pod已达到设定的副本数。Pod（应用）的扩容，只需通过修改Replica的个数就能轻松完成。
 
