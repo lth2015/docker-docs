@@ -64,9 +64,14 @@ export FLANNEL_NET=172.16.0.0/16
 cd ~/kubernetes/cluster/ && KUBERNETES_PROVIDER=ubuntu ./kube-up.sh
 ```
 
-##### 7. 如果你的机器不能访问外网，请在我这里[下载] (k8s-images.tar.gz)：
+##### 7. 如果你的机器不能访问外网，请在我这里下载[K8s的Ubuntu版本二进制包](binaries.tar.gz)和[插件依赖的镜像](k8s-images.tar.gz)：
+
+* 将二进制包解压到你的kubernetes/cluster/ubuntu/下
+
 * 将k8s-images.tar.gz解压后，依次将所有的tar文件用docker命令加载到每台主机上
+
 * 注销掉~/kubernetes/cluster/ubuntu/utils.sh中的download-release.sh这句，如
+
 如果安装过程中没有报错，则集群安装成功，若有问题，认真检查上述设置是否正确
 
 #### 需要安装的插件
