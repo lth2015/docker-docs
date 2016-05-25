@@ -14,6 +14,8 @@
 #### 开始安装
 ------------------------------------------------------ 
 
+##### *注意*: 下面3~6步都是在能够翻墙的情况下的操作步骤，如果您的服务器不能翻墙，请直接看本文结尾
+
 ##### 1. 在每台主机上安装*docker*
 
 ```bash
@@ -59,18 +61,45 @@ export SERVICE_CLUSTER_IP_RANGE=192.168.3.0/24
 export FLANNEL_NET=172.16.0.0/16
 ```
 
-##### 6. 如果你的集群能够访问外网（墙你懂的）
+##### 6. 执行安装脚本
 ```
 cd ~/kubernetes/cluster/ && KUBERNETES_PROVIDER=ubuntu ./kube-up.sh
 ```
 
-##### 7. 如果你的机器不能访问外网，请在我这里下载[K8s的Ubuntu版本二进制包](binaries.tar.gz)和[插件依赖的镜像](k8s-images.tar.gz)：
+##### 7. 批量安装Kubernetes的插件：
+------------------------------------------------------ 
+
+并将上述镜像load到每台kubernetes的计算节点上，然后批量安装插件：
+```bash
+cd ~/kubernetes/cluster/ubuntu && KUBERNETES_PROVIDER=ubuntu ./deployAddons.sh
+```
+
+#### 检查集群
+------------------------------------------------------ 
+
+查看集群插件：
+
+* 查看dashboard：浏览器打开*http://your-kubernetes-master-ip:8080/ui*
+
+* 查看cAdvisor：浏览器打开*http://your-kubernetes-master-ip:4194/*
+
+
+### 不能翻墙
+------------------------------------------------------ 
+
+##### 1. 如果你的机器不能访问外网，请在我这里下载[K8s的Ubuntu版本二进制包](binaries.tar.gz)
+
+* 下载一个份干净的源码： git clone https://github.com/kubernetes/kubernetes.git
 
 * 将二进制包解压到你的kubernetes/cluster/ubuntu/下
 
-* 将k8s-images.tar.gz解压后，依次将所有的tar文件用docker命令加载到每台主机上
+* 注销掉~/kubernetes/cluster/ubuntu/utils.sh中的"${KUBE_ROOT}/cluster/ubuntu/download-release.sh"这句
 
-* 注销掉~/kubernetes/cluster/ubuntu/utils.sh中的download-release.sh这句，如
+* 执行上文中的5~7步，执行kube-up脚本
+
+##### 2. 手工下载需要[依赖的插件镜像](k8s-images.tar.gz)：
+
+* 将k8s-images.tar.gz解压后，依次将所有的tar文件用docker命令加载到每台主机上
 
 如果安装过程中没有报错，则集群安装成功，若有问题，认真检查上述设置是否正确
 
@@ -107,19 +136,8 @@ gcr.io/google_containers/etcd:2.0.9
 gcr.io/google_containers/pause:0.8.0
 
 
-#### 批量安装Kubernetes的插件：
+#### 后记
 ------------------------------------------------------ 
 
-并将上述镜像load到每台kubernetes的计算节点上，然后批量安装插件：
-```bash
-cd ~/kubernetes/cluster/ubuntu && KUBERNETES_PROVIDER=ubuntu ./deployAddons.sh
-```
+##### 一定要有一台能够翻墙的主机!
 
-#### 检查集群
------------------------------------------------------- 
-
-查看集群插件：
-
-* 查看dashboard：浏览器打开*http://your-kubernetes-master-ip:8080/ui*
-
-* 查看cAdvisor：浏览器打开*http://your-kubernetes-master-ip:4194/*
