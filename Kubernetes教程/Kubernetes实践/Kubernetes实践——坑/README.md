@@ -23,7 +23,7 @@ https://github.com/kubernetes/kubernetes/issues/5181
 
 Pod创建不成功，使用kubectl describe查看：
 
-![]
+![](images/describe-pods.jpg)
 
 使用rbd lock list查看这个镜像（例如：esclient2）
 
@@ -33,7 +33,7 @@ rbd lock list esclient2
 
 如下图所示：
 
-![]
+![](images/lock-list.jpg)
 
 
 使用rbd lock remove删除rbd锁
@@ -42,4 +42,4 @@ rbd lock list esclient2
 rbd lock remove esclient2 kubelet_lock_magic_ndoe3 client.9789
 ```
 
-![]
+![](images/lock-remove.jpg)
