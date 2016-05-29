@@ -18,3 +18,28 @@ https://github.com/kubernetes/kubernetes/issues/5181
 
 
 #### 案例三：kubectl exec -ti $pod /bin/bash，不能进入容器
+
+#### 案例四：RBD盘被锁住，重新创建的Pod不能挂载上这个rbd
+
+Pod创建不成功，使用kubectl describe查看：
+
+![]
+
+使用rbd lock list查看这个镜像（例如：esclient2）
+
+```bash
+rbd lock list esclient2
+```
+
+如下图所示：
+
+![]
+
+
+使用rbd lock remove删除rbd锁
+
+```bash
+rbd lock remove esclient2 kubelet_lock_magic_ndoe3 client.9789
+```
+
+![]
