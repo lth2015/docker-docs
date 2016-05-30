@@ -34,3 +34,132 @@ Kubernetes总体包含两种角色，一个是Master节点，负责集群调度�
 * *Kubelet*: 负责本Node节点上的Pod的创建、修改、监控、删除等Pod的全生命周期管理，Kubelet实时向API Server发送所在计算节点（Node）的信息。
 
 * *Kube-Proxy*: 实现Service的抽象，为一组Pod抽象的服务（Service）提供统一接口并提供负载均衡功能。
+
+#### 核心原理
+--------------------------------------------------------
+
+##### API Server
+--------------------------------------------------------
+
+* 如何访问Kubernetes API
+
+Kubernetes API通过一个kube-apiserver的进程提供服务，该进程运行在Kubernetes Master节点上，默认的情况下，监听两个端口：
+
+  * 本地端口:  默认值为8080，用于接收HTTP请求，非认证授权的HTTP请求通过该端口访问API Server
+  * 安全端口：默认值为6443，用于接收HTTPS请求，用于基于Token文件或者客户端证书及HTTP Base的认证，用于基于策略的授权，Kubernetes默认情况下不启动HTTPS安全访问机制。
+
+用户可以通过编程方式访问API接口，也可以通过curl命令来直接访问它，例如，我们在Master节点上访问API Server：
+
+```bash
+curl http://localhost:8080/ap/
+
+{
+  "paths": [
+    "/api",
+    "/api/v1",
+    "/apis",
+    "/apis/autoscaling",
+    "/apis/autoscaling/v1",
+    "/apis/batch",
+    "/apis/batch/v1",
+    "/apis/extensions",
+    "/apis/extensions/v1beta1",
+    "/healthz",
+    "/healthz/ping",
+    "/logs/",
+    "/metrics",
+    "/resetMetrics",
+    "/swagger-ui/",
+    "/swaggerapi/",
+    "/ui/",
+    "/version"
+  ]
+}
+```
+
+Kubernetes还提供了一个代理程序——Kubectl Proxy，它既能作为API Server的反向代理，也能作为普通客户端访问API Server，使用方法如下：
+
+```bash
+kubectl proxy --port=9090 &
+[1] 67686
+
+Starting to serve on 127.0.0.1:9090
+
+curl http://localhost:9090/api
+
+{
+  "kind": "APIVersions",
+  "versions": [
+    "v1"
+  ],
+  "serverAddressByClientCIDRs": [
+    {
+      "clientCIDR": "0.0.0.0/0",
+      "serverAddress": "10.149.149.3:443"
+    }
+  ]
+}
+```
+
+Kubernetes提供了API访问说明，您可以通过浏览器访问http://${KUBE-MASTER}:8080/swagger_ui/来查看RESTful风格API访问规约，如图2-1所示：
+
+![图2-1](images/swagger_api.png)
+
+
+##### 集群功能模块之间的通信
+--------------------------------------------------------
+
+从图2-2中可以看出，
+
+![图2-2](images/kubernetes-architecture.png)
+
+API Server是整个集群的核心，负责集群各个模块之间的通信。集群内部的功能模块通过API Server将信息存入ETCD，其他模块通过API Server读取这些信息，从而实现各模块之间的信息交互。比如，Node节点上的Kubelet每个一个时间周期，通过API Server报告自身状态，API Server接收这些信息后，将节点状态信息保存到ETCd中。Controller Manager中的Node Controller通过API Server定期读取这些节点状态信息，并做相应处理。Scheduler监听到某个Pod创建的信息后，检索所有符合该Pod要求的节点列表，并将Pod绑定到节点李彪中最符合要求的节点上：如果Scheduler监听到某个Pod被删除，则删除本节点上的相应Pod实例。
+
+从上面的通信过程可以看出，API Server的访问压力很大，这也是限制（制约）Kubernetes集群规模的关键，缓解API Server的压力可以通过缓存来实现，通过watch/list操作，将资源对象的信息缓存到本地，这种方法在一定程度上缓解了API Server的压力，但是不是最好的解决办法。
+
+##### Controller Manager
+--------------------------------------------------------
+
+Controller Manager作为集群的内部管理控制中心，负责集群内的Node，Pod，RC，服务端点（Endpoint），命名空间（Namespace），服务账号（ServiceAccount）、资源配额（ResourceQuota）等的管理并执行自动化修复流程，确保集群出处于预期的工作状态，比如，RC实现自动控制Pod活跃副本数，如果Pod出错退出，RC自动创建一个新的Pod，来保持活跃的Pod的个数。
+
+Controller Manager包含Replication Controller、Node Controller、ResourceQuota Controller、Namespace Controller、ServiceAccount Controller、Token Controller、Server Controller以及Endpoint Controller等多个控制器，Controller Manager是这些Controller的管理者。
+
+我们会在以后的文章中深入介绍这些Controller。
+
+##### Scheduler
+--------------------------------------------------------
+
+Kubernetes Scheduler负责Pod的调度管理，它负责将要创建的Pod按照一定的规则分配在某个适合的Node上。
+
+Scheduler的默认调度流程分为以下两步：
+
+* 预选调度过程，即遍历所有目标Node，筛选出符合要求的候选节点。为此，Kubernetes内置了多种预选策略供用户选择。
+
+* 确定最优节点，在第一步的基础上，采用优选策略为每个候选节点打分，分值最高的胜出。
+
+Scheduler的调度流程是通过插件方式加载“调度算法提供者”具体实现的，一个调度算法提供者其实就是包括了一组预选策略与一组有限选择策略的结构体，注册算法插件的函数如下：
+
+```golang
+func RegisterAlgorithmProvider(name string, predicateKeys, priorityKeys util.StringSet)
+```
+
+它包含三个参数：“name string”参数为算法名，“predicateKeys"为为算法用到的预选策略集合，"priorityKeys”为算法用到的优选策略集合。
+
+Scheduler中可用的预算策略包含：NoDiskConflict, PodFitResources, PodSelectorMatches, PodFitHost, CheckNodeLabelPresence, CheckServiceAffinity和PodFitsPorts策略等。其默认的AlgorithmProvider加载的预选策略Predicates包括：PodFitsPorts, PodFitsResources, NoDiskConflict, MatchNodeSelector和HostName，即每个节点只有通过前面的五个默认预选策略后，才能初步被选中，进入下一个流程。
+
+##### Kubelet
+--------------------------------------------------------
+
+在Kubernetes集群中，每个计算节点（Node）上会运行一个守护进程：Kubelet。它用于处理Master节点下发到本节点的任务，管理Pod以及Pod中的容器。每个Kubelet进程会在API Server上注册自身节点的信息，定期向API Server汇报节点资源的使用情况，并通过cAdvise监控容器和节点资源。
+
+Kubelet主要功能：
+
+* 节点管理：kubelet可以自动向API Server注册自己，它可以采集所在计算节点的资源信息和使用情况并提交给API Server，通过启动/停止kubelet进程来实现计算节点的扩容、缩容。
+
+* Pod管理：kubelet通过API Server监听ETCD目录，同步Pod清单，当发现有新的Pod绑定到所在的节点，则按照Pod清单的要求创建改清单。如果发现本地的Pod被删除，则kubelet通过docker client删除该容器。
+
+* 健康检查：Pod通过两类探针来检查容器的健康状态。一个是LivenessProbe探针，用于判断容器是否健康，如果LivenessProbe探针探测到容器不健康，则kubelet将删除该容器，并根据容器的重启策略做相应的处理。另一类是ReadnessProbe探针，用于判断容器是否启动完成，且准备接受请求，如果ReadnessProbe探针检测到失败，则Pod的状态被修改。Enpoint Controller将从Service的Endpoint中删除包含该容器的IP地址的Endpoint条目。kubelet定期调用LivenessProbe探针来诊断容器的健康状况，它目前支持三种探测：HTTP的方式发送GET请求; TCP方式执行Connect目的端口; Exec的方式，执行一个脚本。
+
+* cAdvisor资源监控: 在Kubernetes集群中，应用程序的执行情况可以在不同的级别上检测到，这些级别包含Container，Pod，Service和整个集群。作为Kubernetes集群的一部分，Kubernetes希望提供给用户各个级别的资源使用信息，这将使用户能够更加深入地了解应用的执行情况，并找到可能的瓶颈。Heapster项目为Kubernetes提供了一个基本的监控平台，他是集群级别的监控和事件数据集成器。
+
+![cAdvisor](images/cAdvisor.png)
