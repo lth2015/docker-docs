@@ -160,6 +160,22 @@ Kubelet主要功能：
 
 * 健康检查：Pod通过两类探针来检查容器的健康状态。一个是LivenessProbe探针，用于判断容器是否健康，如果LivenessProbe探针探测到容器不健康，则kubelet将删除该容器，并根据容器的重启策略做相应的处理。另一类是ReadnessProbe探针，用于判断容器是否启动完成，且准备接受请求，如果ReadnessProbe探针检测到失败，则Pod的状态被修改。Enpoint Controller将从Service的Endpoint中删除包含该容器的IP地址的Endpoint条目。kubelet定期调用LivenessProbe探针来诊断容器的健康状况，它目前支持三种探测：HTTP的方式发送GET请求; TCP方式执行Connect目的端口; Exec的方式，执行一个脚本。
 
-* cAdvisor资源监控: 在Kubernetes集群中，应用程序的执行情况可以在不同的级别上检测到，这些级别包含Container，Pod，Service和整个集群。作为Kubernetes集群的一部分，Kubernetes希望提供给用户各个级别的资源使用信息，这将使用户能够更加深入地了解应用的执行情况，并找到可能的瓶颈。Heapster项目为Kubernetes提供了一个基本的监控平台，他是集群级别的监控和事件数据集成器。
+* cAdvisor资源监控: 在Kubernetes集群中，应用程序的执行情况可以在不同的级别上检测到，这些级别包含Container，Pod，Service和整个集群。作为Kubernetes集群的一部分，Kubernetes希望提供给用户各个级别的资源使用信息，这将使用户能够更加深入地了解应用的执行情况，并找到可能的瓶颈。Heapster项目为Kubernetes提供了一个基本的监控平台，他是集群级别的监控和事件数据集成器。Heapster通过收集所有节点的资源使用情况，将监控信息实时推送至一个可配置的后端，用于存储和可视化展示。
+  cAdvisor的截图如下：
+  ![cAdvisor](images/cAdvisor.png)
 
-![cAdvisor](images/cAdvisor.png)
+
+#### 总结与展望
+--------------------------------------------------------
+
+Kubernetes是包含容器云全要素的管理引擎，不仅仅是个容器的编排工具，以kubernetes为基础，可以实现以容器为中心的生态系统，也可以实现软件定义的计算。
+
+Kubernetes使用简单、便捷、易学，这让很多小公司、小团队搭建私有的容器云成为了可能。
+
+截至目前为止，Kubernetes现在已经发布1.2.4版本，1.2版本对于之前的版本增添了很多功能，并且支持1000台节点的集群规模。随着Kubernetes的快速发展和社区的日益火爆，我们相信，越来越多的人会参与到kubernetes的开发和使用中来。
+
+以Docker为代表的容器技术会在最近的几年中得到快速的推广，它将迅速颠覆现有软件发布、运维的现状，甚至会改变互联网的技术生态格局。而且，以Swarm，Kubernetes，Mesos为代表的开源容器云基础组件的出现，更加速了这一过程。
+
+容器技术的火爆预示着一个时代的降临——容器时代，那么，请站上属于你的时代！
+
+![](../../../images/容器时代二维码.jpg)
