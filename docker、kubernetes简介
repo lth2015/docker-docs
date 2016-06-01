@@ -1,0 +1,23 @@
+
+一、Docker是什么
+Docker是一个开源的引擎，提供强大的打包工具，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的可运行系统，把操作系统(如ubuntu)、基础组件(如jdk)、应用程序(如java webapp)都打包在其中，形成docker镜像，然后可在任何主机上进行无差别的部署和运行——即运行一个docker 容器，Docker容器是Docker镜像的执行实例。
+
+二、Kubernetes是什么
+Kubernetes是谷歌开源的容器编排引擎，基于Docker构建一个容器的调度服务，提供资源调度、均衡容灾、服务注册、动态扩缩容等功能套件，为容器集群管理提供了一站式服务。
+
+三、Kubernetes关键概念
+Service(简称SVC)
+Kubernetes内部的服务资源的抽象，对外暴露一个服务（即Service），同时，它可以定义访问模式（HTTP/TCP/UDP）和端口号，并以一个虚拟IP的形式发布出来，它拥有一个指定的名字，在容器内部，可以通过这个名字来访问这个Service代表的应用实例，在访问期间，Service自动按照Round-Robin的策略来做负载均衡
+
+Pod
+Kubernetes中应用的概念，它是有一个或者一组容器组成，用于运行某一个特定应用，Pod是Kubernetes应用调度的最小单元，比如，通过Kubernetes要运行一个Nginx容器，那么，就需要将Nginx容器发在一个Pod中，在Kubernetes中部署运行。Service所抽象的应用实例，就是指的是这些Pod
+
+Replication Controller(简称RC)
+Kubernete的副本控制器，它用于控制存活的Pod实例个数，即副本数。如果没有达到预先制定的个数（例如有pod挂死不可用），那么就创建新的Pod已达到设定的副本数
+
+Node
+实际运行容器的计算节点（物理机或者虚拟机）
+
+四、为什么要使用Kubernetes
+Docker技术从发布到现在，受到了互联网行业的热烈追捧，在很多公司的生产环境中都使用了Docker技术。但是，随着Docker的使用场景和容器个数的增加，从单机运行Docker走向集群部署已成为必然趋势，Kubernetes是谷歌brog的开源版本，brog在谷歌内部已有长达十年的成熟运行经验，因此Kubernetes是一套完备的、被广泛认可的容器集群管理工具
+
