@@ -113,11 +113,10 @@ Kubernetes提供了API访问说明，您可以通过浏览器访问http://${KUBE
 ##### 集群功能模块之间的通信
 --------------------------------------------------------
 
-从图2-2中可以看出，
 
 ![图2-2](images/kubernetes-architecture.png)
 
-API Server是整个集群的核心，负责集群各个模块之间的通信。集群内部的功能模块通过API Server将信息存入ETCD，其他模块通过API Server读取这些信息，从而实现各模块之间的信息交互。比如，Node节点上的Kubelet每个一个时间周期，通过API Server报告自身状态，API Server接收这些信息后，将节点状态信息保存到ETCd中。Controller Manager中的Node Controller通过API Server定期读取这些节点状态信息，并做相应处理。Scheduler监听到某个Pod创建的信息后，检索所有符合该Pod要求的节点列表，并将Pod绑定到节点李彪中最符合要求的节点上：如果Scheduler监听到某个Pod被删除，则删除本节点上的相应Pod实例。
+从图2-2中可以看出，API Server是整个集群的核心，负责集群各个模块之间的通信。集群内部的功能模块通过API Server将信息存入ETCD，其他模块通过API Server读取这些信息，从而实现各模块之间的信息交互。比如，Node节点上的Kubelet每个一个时间周期，通过API Server报告自身状态，API Server接收这些信息后，将节点状态信息保存到ETCd中。Controller Manager中的Node Controller通过API Server定期读取这些节点状态信息，并做相应处理。Scheduler监听到某个Pod创建的信息后，检索所有符合该Pod要求的节点列表，并将Pod绑定到节点李彪中最符合要求的节点上：如果Scheduler监听到某个Pod被删除，则删除本节点上的相应Pod实例。
 
 从上面的通信过程可以看出，API Server的访问压力很大，这也是限制（制约）Kubernetes集群规模的关键，缓解API Server的压力可以通过缓存来实现，通过watch/list操作，将资源对象的信息缓存到本地，这种方法在一定程度上缓解了API Server的压力，但是不是最好的解决办法。
 
