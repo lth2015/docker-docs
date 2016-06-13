@@ -339,7 +339,7 @@ rbd_default_features = 3
 ceph-deploy mon create-initial
 ```
 
-查看/etc/ceph下是否有如下文件
+如果安装顺利的话，/etc/ceph下会生成如下文件
 
 ```bash
 ceph.bootstrap-mds.keyring
@@ -347,6 +347,28 @@ ceph.bootstrap-osd.keyring
 ceph.bootstrap-rgw.keyring
 ceph.client.admin.keyring
 ```
+
+如果安装过程中报错，那么要进行如下操作：
+
+在每台ceph节点上将ceph从/usr/bin下移走，比如移动到/tmp下，之后还要移回
+
+```bash
+mv /usr/bin/ceph /tmp
+```
+
+执行purgedata
+```bash
+ceph-deploy purgedata node2 node3 node4
+```
+
+如果不报错，那么在每台机ceph节点上将/tmp下的ceph移回/usr/bin下
+
+重新执行ceph-deploy new和ceph-deploy mon两个命令
+
+如果这步还报错，那么使用ceph-deploy purge命令删除mon节点的ceph，重新手动安装，知道安装成功。
+
+
+安装过程中会出现各种问题，可以通过google寻求答案。
 
 ##### ceph-deploy 添加osd 
 
