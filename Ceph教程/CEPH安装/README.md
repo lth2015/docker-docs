@@ -1,7 +1,7 @@
-# 在ubuntu14.04 安装ceph10.2.1分布式存储集群
+在ubuntu14.04 安装ceph10.2.1分布式存储集群
 -----------------------------------------------------------
 
-## 对系统进行更新
+#### 对系统进行更新
 ```
 apt-get update
 apt-get upgrade
@@ -9,8 +9,9 @@ apt-get autoremove
 apt-get autoclean
 ```
 
-## 系统初始化
-### 建立信任
+#### 系统初始化
+
+##### 建立信任
 ```
 在每个节点上更改/etc/hosts内容
 127.0.0.1       localhost
@@ -25,19 +26,22 @@ apt-get autoclean
 10.149.149.9    node9
 
 从node3上建立到其他节点的信任通道
+
+```bash
 root@node3:/etc/ceph# ssh-keygen  -t rsa
-一路回车
 root@node3:/etc/ceph# ssh-copy-id  -i ~/.ssh/id_rsa.pub  node{1-9}
 ```
 
-### 配置dns server
+##### 配置dns server
 
+```bash
 vim /etc/resolvconf/resolv.conf.d/base
 nameserver 10.149.151.70
+```
 
-### sysctl 参数调整（在每台机器上执行）
+##### sysctl 参数调整（在每台机器上执行）
 
-#### 禁用ipv6
+##### 禁用ipv6
 
 ```bash
 net.ipv6.conf.all.disable_ipv6 = 1
@@ -45,7 +49,7 @@ net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1
 ```
 
-#### 信号量和共享内存段设置
+##### 信号量和共享内存段设置
 
 ```bash
 kernel.sem = 250 32000 100 128
@@ -54,13 +58,13 @@ kernel.shmmax = 2147483648
 kernel.shmmni = 4096
 ```
 
-#### 进程可以同时打开的最大句柄数，这个参数直接限制最大并发连接数。
+##### 进程可以同时打开的最大句柄数，这个参数直接限制最大并发连接数。
 
 ```bash
 fs.file-max = 262140
 ```
 
-#### 对内存和swap进行设置
+##### 对内存和swap进行设置
 
 ```bash
 vm.swappiness = 1
@@ -75,7 +79,7 @@ vm.dirty_expire_centisecs = 200
 kernel.randomize_va_space = 2
 ```
 
-#### 内核套接字缓存区大小设置
+##### 内核套接字缓存区大小设置
 
 ```bash
 net.core.rmem_default = 33554432
@@ -84,7 +88,7 @@ net.core.wmem_default = 33554432
 net.core.wmem_max = 33554432
 ```
 
-#### ip协议栈设置
+##### ip协议栈设置
 
 ```bash
 net.ipv4.tcp_rmem = 10240 87380 33554432
@@ -123,7 +127,7 @@ net.ipv4.icmp_ignore_bogus_error_responses = 1
 net.ipv4.tcp_congestion_control = htcp
 ```
 
-#### 开启安全补丁自动更新
+##### 开启安全补丁自动更新
 
 需先使用如下命令安装无从应答模块:
 
@@ -146,7 +150,7 @@ APT::Periodic::Unattended-Upgrade"1";
 
 不需要的时候我们可将配置文件删除或清空即可。
 
-#### 禁用RQBALANCE特性
+##### 禁用RQBALANCE特性
 
 RQBALANCE主要用于优化CPU使用以及降低能耗，RQBALANCE是将中断尽量平均地发送到每个CPU上，主要用于在多个 CPU 间分发硬件中断来提高性能，我建议禁用 RQBALANCE 特性以避免线程被硬件中断。
 
@@ -162,7 +166,7 @@ sudo vi /etc/default/irqbalance
 ENABLED=0
 ```
 
-#### 设置进程限制和打开最大文件数
+##### 设置进程限制和打开最大文件数
 
 ```bash
 vim /etc/security/limits.conf 
@@ -178,7 +182,7 @@ vim /etc/security/limits.d/90-nofiles.conf
  root            hard  nofile            65535
 ```
 
-#### 禁用不必要的服务
+##### 禁用不必要的服务
 
 Ubuntu 的服务运行都需要内存、CPU  和磁盘空间，禁用或删除不必要的服务可以提高系统的整体性能并减小攻击面。使用如下命令我们可以查看到当前系统正在运行哪些服务：
 
@@ -193,17 +197,18 @@ sudo update-rc.d -f 服务名 remove
 sudo apt-get purge 服务名
 ```
 
-#### 设置ntp 时间同步
+##### 设置ntp 时间同步
 ```bash
 vi /var/spool/cron/crontabs/root
 */2 * * * * /usr/sbin/ntpdate 10.31.10.4 >/dev/null 2>&1
 ```
 
-## 安全设置
-### 防止ip欺骗
+#### 安全设置
+---------------------------------------------
+
+##### 防止ip欺骗
 
 编辑/etc/host.conf文件
-
 
 ```bash
 sudo vim /etc/host.conf
@@ -211,11 +216,11 @@ sudo vim /etc/host.conf
 
 将这行插入进去
 
-```
+```bash
 nospoof on
 ```
 
-### 防止内存攻击
+##### 防止内存攻击
 
 编辑/etc/fstab文件
 
@@ -228,9 +233,7 @@ sudo vim /etc/fstab
 ```bash
 tmpfs /run/shm tmpfs defaults,noexec,nosuid 0 0
 ```
-### rootkit工具
-
-安装：
+##### rootkit工具安装：
 
 ```bash
 sudo apt-get install rkhunter chkrootkit
@@ -250,8 +253,7 @@ sudo rkhunter --propupd
 sudo rkhunter --check
 ```
 
-### 分析系统log文件
-
+##### 分析系统log文件
 安装：
 
 ```bash
@@ -264,7 +266,7 @@ sudo apt-get install logwatch
 sudo logwatch | less
 ```
 
-### 系统安全检查
+##### 系统安全检查
 
 安装：
 
@@ -278,23 +280,23 @@ sudo apt-get install tiger
 sudo tiger
 ```
 
-## 安装ceph
+#### 安装ceph
 
-### 安装ceph有两种方式，一种使用ceph-deploy，另一种是手工在每台节点上安装
+##### 安装ceph有两种方式，一种使用ceph-deploy，另一种是手工在每台节点上安装
 
-### 使用ceph-deploy安装，选其中一台作为ceph-deploy的部署机，这台机器最好不要是mon节点，例如，我们选在172.21.1.11作为部署节点
+##### 使用ceph-deploy安装，选其中一台作为ceph-deploy的部署机，这台机器最好不要是mon节点，例如，我们选在172.21.1.11作为部署节点
 
 ```bash
 apt-get install ceph-deploy -y
 ```
 
-###安装ceph进程在每个节点（在ceph-deploy节点执行如下如下命令）
+##### 安装ceph进程在每个节点（在ceph-deploy节点执行如下如下命令）
 
 ```bash
 ceph-deploy install ${ceph-node1} ${ceph-node2} ... ${ceph-nodeN}
 ```
 
-###使用ceph-deploy安装，ceph会使用官方的源，在国内会比较慢，可以考虑使用国内的阿里源，手动安装ceph:
+##### 使用ceph-deploy安装，ceph会使用官方的源，在国内会比较慢，可以考虑使用国内的阿里源，手动安装ceph:
 
 设置ceph apt-get 源（在每个节点上执行）
 
@@ -310,7 +312,7 @@ apt-get update
 apt-get update && apt-get install ceph -y
 ```
 
-###用ceph-deploy创建集群，指定几个主机作为初始监视器(mon节点)，使用ceph-deploy new命令，这里，我们选在node2,node3,node4三台机器作为mon节点
+##### 用ceph-deploy创建集群，指定几个主机作为初始监视器(mon节点)，使用ceph-deploy new命令，这里，我们选在node2,node3,node4三台机器作为mon节点
 
 注意，ceph-deploy命令要在部署机的/etc/ceph下执行，如果没有/etc/ceph目录，手工创建：
 
@@ -331,7 +333,7 @@ public_network = 10.149.149.0/24
 rbd_default_features = 3
 ```
 
-### 用ceph-deploy添加初始化监视器并建立gather the keys
+##### 用ceph-deploy添加初始化监视器并建立gather the keys
 
 ```bash
 ceph-deploy mon create-initial
@@ -346,32 +348,32 @@ ceph.bootstrap-rgw.keyring
 ceph.client.admin.keyring
 ```
 
-### ceph-deploy 添加osd 
+##### ceph-deploy 添加osd 
 
 ```bash
 ceph-deploy osd prepare node5:/dev/sde1(/dev/sde1一定要经过格式化)
 ceph-deploy osd activate node5:/dev/sde1
 ```
 
-### 把所有节点加入集群中管理
+##### 把所有节点加入集群中管理
 
 ```bash
 ceph-deploy admin node{2-9}
 ``` 
 
-### 更改ceph.client.admin.keyring权限如下:
+##### 更改ceph.client.admin.keyring权限如下:
 
 ```bash
 chmod +r /etc/ceph/ceph.client.admin.keyring
 ```
 
-### 检查集群健康
+##### 检查集群健康
 
 ```bash
 ceph health
 ```
 
-### 把osd节点中的挂载点写入/etc/fstab，例如：
+##### 把osd节点中的挂载点写入/etc/fstab，例如：
 
 ```bash
 mount 
