@@ -23,7 +23,7 @@ cp -r /home/train/* /home/docker/liyong
 
 要求：
 
-* 以ubuntu:lastest为基础镜像
+* 以ubuntu:latest为基础镜像
 
 * 使用命令修改apt软件源：
 
