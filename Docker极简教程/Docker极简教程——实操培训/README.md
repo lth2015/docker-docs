@@ -53,7 +53,7 @@ sed -i '/archive.ubuntu.com/s/archive.ubuntu.com/cn.archive.ubuntu.com/g' /etc/a
 
 * 将本地trainApp.xml文件添加到镜像里的/apps/product/tomcat7/conf/Catalina/localhost目录下
 
-* 将本地mysql-connector-java-5.1.39.jar文件添加到镜像里的/apps/product/tomcat7/lib目录下
+* 将本地mysql-connector-java-5.1.9.jar文件添加到镜像里的/apps/product/tomcat7/lib目录下
 
 * 将本地trainApp.war文件添加到镜像里的/apps/product/tomcat7/webapps目录下
 
