@@ -16,7 +16,7 @@ ssh docker@172.21.1.27
 构建镜像所需的文件在/home/train下，拷贝到自己的目录下使用, 例如:
 
 ```bash 
-cp -r /home/train/* /home/docker/liyong)
+cp -r /home/train/* /home/docker/liyong
 ```
 
 ##### 编写Dockerfile
