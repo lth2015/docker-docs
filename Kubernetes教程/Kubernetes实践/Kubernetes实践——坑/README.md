@@ -43,3 +43,15 @@ rbd lock remove esclient2 kubelet_lock_magic_ndoe3 client.9789
 ```
 
 ![](images/lock-remove.jpg)
+
+#### 案例五：升级deployment时，k8s不能创建新的rs，升级失败
+
+k8s的1.2版本，通过Rest API调用升级接口，k8s使用的S的算法是hasher(deployment.podTemplate)，oldRs与newesRs结果一样，
+造成没有新的rs创建，也就没有对应的pod创建，升级失败。
+
+
+#### 案例六：docker registry 2.1 API 的_catalog默认返回100条数据
+
+通过http方式请求registry2.1，registry.docker:5000/v2/_catalog返回100条数据，需要使用registry.docker:5000/v2/_catalog?n=2000
+来请求更多的镜像目录。
+
